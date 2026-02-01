@@ -38,6 +38,8 @@ const DEFAULT_GROUPS: TelegramGroup[] = [
   { "id": "-1002986001803", "name": "rakesh yadav", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1002986001803/200", "lastInteraction": 1769943748023 }
 ];
 
+const TABS = ['dashboard', 'groups', 'analysis', 'settings'];
+
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedGroup, setSelectedGroup] = useState<TelegramGroup | null>(null);
@@ -52,7 +54,12 @@ const App: React.FC = () => {
   const [token, setToken] = useState(localStorage.getItem('tg_bot_token') || DEFAULT_TOKEN);
   const [botInfo, setBotInfo] = useState<TelegramBotInfo | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isLocked, setIsLocked] = useState(() => localStorage.getItem('tg_token_locked') === 'true' || true);
+  // FIX: The original initialization logic always resulted in `true`, causing TypeScript
+  // to infer the type of `isLocked` as the literal `true` instead of `boolean`. This
+  // led to a type error when trying to set it to `false`. The logic is corrected to
+  // properly read from localStorage and default to a locked state, ensuring `isLocked`
+  // is correctly typed as `boolean`.
+  const [isLocked, setIsLocked] = useState(() => localStorage.getItem('tg_token_locked') !== 'false');
   const [groups, setGroups] = useState<TelegramGroup[]>(() => {
     const saved = localStorage.getItem('tg_groups');
     return saved ? JSON.parse(saved) : DEFAULT_GROUPS;
@@ -66,12 +73,14 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [lastUpdateId, setLastUpdateId] = useState(() => Number(localStorage.getItem('tg_last_update_id')) || 0);
+
+  const [animationDirection, setAnimationDirection] = useState<'left' | 'right'>('right');
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
   
   const importFileRef = useRef<HTMLInputElement>(null);
-  // Fix: Replaced NodeJS.Timeout with any for browser compatibility
   const pollingRef = useRef<any | null>(null);
 
-  // Initial startup sync
   useEffect(() => { 
     if (token) {
       handleVerify(token).then(() => {
@@ -80,20 +89,18 @@ const App: React.FC = () => {
     } 
   }, []);
 
-  // Set up polling for real-time updates
   useEffect(() => {
     if (token && botInfo) {
       if (pollingRef.current) clearInterval(pollingRef.current);
       pollingRef.current = setInterval(() => {
         discoverGroupsAndJoins(token);
-      }, 10000); // Poll every 10 seconds
+      }, 10000);
     }
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, [token, botInfo, lastUpdateId]);
 
-  // DERIVED: Calculate global total count whenever groups array changes
   useEffect(() => {
     const newTotal = groups.reduce((sum, g) => sum + (g.memberCount || 0), 0);
     setTotalMembers(newTotal);
@@ -113,6 +120,56 @@ const App: React.FC = () => {
     localStorage.setItem('tg_groups', JSON.stringify(groups));
   }, [isLocked, joinEvents, lastUpdateId, groups]);
 
+  const handleTabChange = (newTab: string) => {
+    const currentIndex = TABS.indexOf(activeTab);
+    const newIndex = TABS.indexOf(newTab);
+    
+    if (newIndex > currentIndex) {
+      setAnimationDirection('right');
+    } else if (newIndex < currentIndex) {
+      setAnimationDirection('left');
+    }
+    
+    if (currentIndex !== newIndex) {
+      setActiveTab(newTab);
+    }
+  };
+  
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
+  };
+  
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+  
+    const horizontalDistance = touchStart.x - touchEnd.x;
+    const verticalDistance = touchStart.y - touchEnd.y;
+    const minSwipeDistance = 50;
+  
+    if (Math.abs(horizontalDistance) < minSwipeDistance || Math.abs(horizontalDistance) < Math.abs(verticalDistance)) {
+      setTouchStart(null);
+      setTouchEnd(null);
+      return;
+    }
+  
+    const currentIndex = TABS.indexOf(activeTab);
+    if (horizontalDistance > 0) { // Swipe Left
+      const nextIndex = (currentIndex + 1) % TABS.length;
+      handleTabChange(TABS[nextIndex]);
+    } else { // Swipe Right
+      const prevIndex = (currentIndex - 1 + TABS.length) % TABS.length;
+      handleTabChange(TABS[prevIndex]);
+    }
+  
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   const syncAllGroupsMemberCount = async (currentToken: string) => {
     try {
       const updatedGroups = await Promise.all(groups.map(async (g) => {
@@ -120,7 +177,7 @@ const App: React.FC = () => {
           const count = await getChatMemberCount(currentToken, g.id);
           return { ...g, memberCount: count };
         } catch (e) {
-          return g; // Keep old count if fetch fails
+          return g;
         }
       }));
       setGroups(updatedGroups);
@@ -175,6 +232,7 @@ const App: React.FC = () => {
       let maxId = lastUpdateId;
       
       const memberChanges: Record<string, number> = {};
+      const titleChanges: Record<string, string> = {};
 
       updates.forEach(u => {
         maxId = Math.max(maxId, u.update_id);
@@ -189,7 +247,6 @@ const App: React.FC = () => {
           const wasMemberBefore = ['member', 'administrator', 'creator'].includes(oldStatus);
 
           if (isMemberNow && !wasMemberBefore) {
-            // User joined
             newJoins.push({
               userId: mu.new_chat_member.user.id,
               userName: mu.new_chat_member.user.first_name + (mu.new_chat_member.user.last_name ? ` ${mu.new_chat_member.user.last_name}` : ''),
@@ -199,9 +256,13 @@ const App: React.FC = () => {
             });
             memberChanges[chatIdStr] = (memberChanges[chatIdStr] || 0) + 1;
           } else if (!isMemberNow && wasMemberBefore) {
-            // User left/kicked/banned
             memberChanges[chatIdStr] = (memberChanges[chatIdStr] || 0) - 1;
           }
+        }
+
+        if (u.message && u.message.new_chat_title) {
+          const chatIdStr = u.message.chat.id.toString();
+          titleChanges[chatIdStr] = u.message.new_chat_title;
         }
       });
 
@@ -212,12 +273,20 @@ const App: React.FC = () => {
         });
       }
 
-      // SYNC: Apply all net changes to the groups state immediately
-      if (Object.keys(memberChanges).length > 0) {
+      if (Object.keys(memberChanges).length > 0 || Object.keys(titleChanges).length > 0) {
         setGroups(prevGroups => prevGroups.map(g => {
-          if (memberChanges[g.id]) {
-            const updatedCount = Math.max(0, (g.memberCount || 0) + memberChanges[g.id]);
-            return { ...g, memberCount: updatedCount };
+          const hasMemberChange = memberChanges[g.id] !== undefined;
+          const hasTitleChange = titleChanges[g.id] !== undefined;
+
+          if (hasMemberChange || hasTitleChange) {
+            const updatedGroup = { ...g };
+            if (hasMemberChange) {
+              updatedGroup.memberCount = Math.max(0, (g.memberCount || 0) + memberChanges[g.id]);
+            }
+            if (hasTitleChange) {
+              updatedGroup.name = titleChanges[g.id];
+            }
+            return updatedGroup;
           }
           return g;
         }));
@@ -234,8 +303,6 @@ const App: React.FC = () => {
     try {
       await kickChatMember(token, chatId, userId);
       setJoinEvents(prev => prev.filter(e => `${e.userId}-${e.timestamp}` !== eventId));
-      
-      // Immediately decrement count in state
       setGroups(prevGroups => prevGroups.map(g => {
         if (g.id === chatId.toString()) {
           return { ...g, memberCount: Math.max(0, (g.memberCount || 0) - 1) };
@@ -296,17 +363,24 @@ const App: React.FC = () => {
   const formatTime12h = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
+  
+  const animationClass = useMemo(() => {
+    if (animationDirection === 'right') {
+      return 'animate-in slide-in-from-right-8';
+    }
+    return 'animate-in slide-in-from-left-8';
+  }, [activeTab]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row font-sans transition-all duration-300">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} theme={theme} toggleTheme={toggleTheme} />
+      <Sidebar activeTab={activeTab} onTabChange={handleTabChange} theme={theme} toggleTheme={toggleTheme} />
 
       <main className="flex-1 md:ml-64 p-4 pb-28 md:p-6 lg:p-8 pt-4 w-full max-w-[1400px] mx-auto overflow-hidden">
-        <header className="flex flex-col gap-2 mb-4 animate-in slide-in-from-top duration-500">
+        <header className="flex flex-col gap-2 mb-4 animate-in slide-in-from-top">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-2.5 h-8 bg-blue-600 rounded-full shadow-[0_0_25px_rgba(37,99,235,0.7)]" />
-              <h1 className="text-2xl md:text-3xl font-black tracking-tighter capitalize">{activeTab}</h1>
+              <h1 key={activeTab} className="text-2xl md:text-3xl font-black tracking-tighter capitalize animate-in fade-in">{activeTab}</h1>
             </div>
             
             <div className="flex items-center gap-2">
@@ -320,9 +394,14 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <div className="relative min-h-[70vh]">
+        <div 
+          className="relative min-h-[70vh]"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {activeTab === 'dashboard' && (
-            <div className="space-y-6 animate-in slide-in-from-right-6 duration-500">
+            <div className={`space-y-6 ${animationClass}`}>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                  <div className="bg-blue-600 p-5 rounded-[2rem] border-b-4 border-blue-800 shadow-[0_15px_30px_rgba(37,99,235,0.4)] transition-all hover:-translate-y-1">
                     <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-4"><Icons.Home size={20} className="text-white" strokeWidth={3} /></div>
@@ -345,7 +424,6 @@ const App: React.FC = () => {
                     <p className="text-xl font-black text-white uppercase">{botInfo ? 'ACTIVE' : 'OFFLINE'}</p>
                  </div>
               </div>
-
               <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 shadow-xl">
                  <h2 className="text-lg font-black uppercase tracking-tight mb-4 flex items-center gap-3">
                    <Icons.Zap size={20} className="text-blue-600" /> Fast Batch Injection
@@ -361,7 +439,7 @@ const App: React.FC = () => {
           )}
 
           {activeTab === 'groups' && (
-            <div className="space-y-6 animate-in fade-in duration-500">
+            <div className={`space-y-6 ${animationClass}`}>
                <div className="relative group">
                 <Icons.Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input type="text" placeholder="Search active batches..." className="w-full bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 pl-10 pr-4 py-3 rounded-2xl text-xs outline-none focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
@@ -375,7 +453,7 @@ const App: React.FC = () => {
           )}
 
           {activeTab === 'analysis' && (
-            <div className="space-y-6 animate-in slide-in-from-bottom-8 duration-500">
+            <div className={`space-y-6 ${animationClass}`}>
               <div className="flex flex-col md:flex-row gap-4">
                  <div className="flex-1 bg-indigo-600 p-6 rounded-[2.5rem] border-b-4 border-indigo-900 shadow-xl text-white relative overflow-hidden active:scale-95 transition-transform">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-1 opacity-80">Today Joined</p>
@@ -427,7 +505,7 @@ const App: React.FC = () => {
           )}
 
           {activeTab === 'settings' && (
-            <div className="max-w-xl space-y-6 animate-in slide-in-from-left-6 duration-500">
+            <div className={`max-w-xl space-y-6 ${animationClass}`}>
                <div className="bg-indigo-700/10 p-8 rounded-[3rem] border-2 border-indigo-500/20 shadow-xl">
                   <h3 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.4em] mb-6 flex items-center gap-2">
                     <Icons.Zap size={14} /> Bot Gateway
