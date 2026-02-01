@@ -6,44 +6,36 @@ import { Icons } from './constants.tsx';
 import { TelegramGroup, JoinEvent } from './types.ts';
 import { verifyBotToken, getChatDetails, TelegramBotInfo, getChatMemberCount, getRecentUpdates, kickChatMember } from './services/telegramService.ts';
 
+// Add missing constant ROW_COLORS
+const ROW_COLORS = [
+  'bg-blue-500/10 border-blue-500/20 text-blue-600',
+  'bg-emerald-500/10 border-emerald-500/20 text-emerald-600',
+  'bg-rose-500/10 border-rose-500/20 text-rose-600',
+  'bg-amber-500/10 border-amber-500/20 text-amber-600',
+  'bg-purple-500/10 border-purple-500/20 text-purple-600',
+];
+
 const DEFAULT_TOKEN = '8357993008:AAGCcWUfCrRboCCnUS3N3kHS53PvAPIMwxs';
 const DEFAULT_GROUPS: TelegramGroup[] = [
-  { "id": "-1003736636212", "name": "Ultra Calculation", "memberCount": 6, "description": "Auto Synced Hub", "category": "Telegram", "image": "https://picsum.photos/seed/-1003736636212/200", "lastInteraction": Date.now() },
-  { "id": "-1003732445402", "name": "RANI MAM 7.0", "memberCount": 3, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003732445402/200", "lastInteraction": 1769838117170 },
-  { "id": "-1003360985096", "name": "Hindi Foundation Batch 2025 by khan sir", "memberCount": 3, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003360985096/200", "lastInteraction": 1769943253862 },
-  { "id": "-1003067240220", "name": "𝗔𝗗𝗜𝗧𝗬𝗔 𝗦𝗜𝗥 3.0", "memberCount": 8, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003067240220/200", "lastInteraction": 1769773345247 },
-  { "id": "-1003037426232", "name": "𝐕𝐈𝐊𝐑𝐀𝐌𝐉𝐄𝐄𝐓 𝐑𝐄𝐀𝐒𝐎𝐍𝐈𝐍𝐆 𝟑.𝟎", "memberCount": 7, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003037426232/200", "lastInteraction": 1769735170282 },
-  { "id": "-1003767448478", "name": "E1 Coching", "memberCount": 3, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003767448478/200", "lastInteraction": 1769942453739 },
-  { "id": "-1003036147121", "name": "Aman Sir ENG ( Rec)", "memberCount": 8, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003036147121/200", "lastInteraction": 1769918152685 },
-  { "id": "-1003636154961", "name": "Parmar 2.0 ENG", "memberCount": 4, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003636154961/200", "lastInteraction": 1769903309738 },
-  { "id": "-1003565371067", "name": "RWA sanjeev sir Eng Live", "memberCount": 4, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003565371067/200", "lastInteraction": 1769822904677 },
-  { "id": "-1003856954597", "name": "Nimisha mam", "memberCount": 5, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003856954597/200", "lastInteraction": 1769812641775 },
-  { "id": "-1002793359066", "name": "Piyush Sir Reasoning", "memberCount": 15, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1002793359066/200", "lastInteraction": 1769918112466 },
-  { "id": "-1003577096046", "name": "Math by Bhutesh sir", "memberCount": 3, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003577096046/200", "lastInteraction": 1769811153806 },
-  { "id": "-1003225282870", "name": "Selection Way", "memberCount": 14, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003225282870/200", "lastInteraction": 1769921383796 },
-  { "id": "-1003012561565", "name": "Parmar 3.0", "memberCount": 12, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003012561565/200", "lastInteraction": 1769928178498 },
-  { "id": "-1003153087650", "name": "Parmar SSC 4.0 🔴Live", "memberCount": 17, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003153087650/200", "lastInteraction": 1769937548049 },
-  { "id": "-1003419167658", "name": "🛑𝚁𝙰𝙽𝙸 𝙼𝙰𝙼 𝟼.𝟶", "memberCount": 14, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003419167658/200", "lastInteraction": 1769855368945 },
-  { "id": "-1002661265147", "name": "Batch 1", "memberCount": 41, "description": "Rani Mam All Paid Batch", "category": "Telegram", "image": "https://picsum.photos/seed/-1002661265147/200", "lastInteraction": 1769914131999 },
-  { "id": "-1003698762401", "name": "GK & GS Brahmastra 4.0 Batch", "memberCount": 3, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003698762401/200", "lastInteraction": 1769755953244 },
-  { "id": "-1002986001803", "name": "rakesh yadav", "memberCount": 32, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1002986001803/200", "lastInteraction": 1769943748023 }
-];
-
-const SEED_HISTORY: JoinEvent[] = [
-  { userId: 101, userName: "Aman Gupta", chatId: -1002661265147, chatTitle: "Batch 1", timestamp: Date.now() - 604800000 },
-  { userId: 102, userName: "Priya Sharma", chatId: -1002661265147, chatTitle: "Batch 1", timestamp: Date.now() - 518400000 },
-  { userId: 103, userName: "Rohan V", chatId: -1003153087650, chatTitle: "Parmar SSC 4.0", timestamp: Date.now() - 432000000 },
-  { userId: 104, userName: "Vikram J", chatId: -1003012561565, chatTitle: "Parmar 3.0", timestamp: Date.now() - 86400000 },
-];
-
-const ROW_COLORS = [
-  'bg-blue-700/20 border-blue-600/40 text-blue-800 dark:text-blue-300',
-  'bg-emerald-700/20 border-emerald-600/40 text-emerald-800 dark:text-emerald-300',
-  'bg-rose-700/20 border-rose-600/40 text-rose-800 dark:text-rose-300',
-  'bg-amber-700/20 border-amber-600/40 text-amber-800 dark:text-amber-300',
-  'bg-indigo-700/20 border-indigo-600/40 text-indigo-800 dark:text-indigo-300',
-  'bg-purple-700/20 border-purple-600/40 text-purple-800 dark:text-purple-300',
-  'bg-cyan-700/20 border-cyan-600/40 text-cyan-800 dark:text-cyan-300',
+  { "id": "-1003736636212", "name": "PREMIUM HUB 8.0", "memberCount": 0, "description": "Auto Synced Hub", "category": "Telegram", "image": "https://picsum.photos/seed/-1003736636212/200", "lastInteraction": Date.now() },
+  { "id": "-1003732445402", "name": "RANI MAM 7.0", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003732445402/200", "lastInteraction": 1769838117170 },
+  { "id": "-1003360985096", "name": "Hindi Foundation Batch 2025 by khan sir", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003360985096/200", "lastInteraction": 1769943253862 },
+  { "id": "-1003067240220", "name": "𝗔𝗗𝗜𝗧𝗬𝗔 𝗦𝗜𝗥 3.0", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003067240220/200", "lastInteraction": 1769773345247 },
+  { "id": "-1003037426232", "name": "𝐕𝐈𝐊𝐑𝐀𝐌𝐉𝐄𝐄𝐓 𝐑𝐄𝐀𝐒𝐎𝐍𝐈𝐍𝐆 𝟑.𝟎", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003037426232/200", "lastInteraction": 1769735170282 },
+  { "id": "-1003767448478", "name": "E1 Coching", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003767448478/200", "lastInteraction": 1769942453739 },
+  { "id": "-1003036147121", "name": "Aman Sir ENG ( Rec)", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003036147121/200", "lastInteraction": 1769918152685 },
+  { "id": "-1003636154961", "name": "Parmar 2.0 ENG", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003636154961/200", "lastInteraction": 1769903309738 },
+  { "id": "-1003565371067", "name": "RWA sanjeev sir Eng Live", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003565371067/200", "lastInteraction": 1769822904677 },
+  { "id": "-1003856954597", "name": "Nimisha mam", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003856954597/200", "lastInteraction": 1769812641775 },
+  { "id": "-1002793359066", "name": "Piyush Sir Reasoning", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1002793359066/200", "lastInteraction": 1769918112466 },
+  { "id": "-1003577096046", "name": "Math by Bhutesh sir", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003577096046/200", "lastInteraction": 1769811153806 },
+  { "id": "-1003225282870", "name": "Selection Way", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003225282870/200", "lastInteraction": 1769921383796 },
+  { "id": "-1003012561565", "name": "Parmar 3.0", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003012561565/200", "lastInteraction": 1769928178498 },
+  { "id": "-1003153087650", "name": "Parmar SSC 4.0 🔴Live", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003153087650/200", "lastInteraction": 1769937548049 },
+  { "id": "-1003419167658", "name": "🛑𝚁𝙰𝙽𝙸 𝙼𝙰𝙼 𝟼.𝟶", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003419167658/200", "lastInteraction": 1769855368945 },
+  { "id": "-1002661265147", "name": "Batch 1", "memberCount": 0, "description": "Rani Mam All Paid Batch", "category": "Telegram", "image": "https://picsum.photos/seed/-1002661265147/200", "lastInteraction": 1769914131999 },
+  { "id": "-1003698762401", "name": "GK & GS Brahmastra 4.0 Batch", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003698762401/200", "lastInteraction": 1769755953244 },
+  { "id": "-1002986001803", "name": "rakesh yadav", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1002986001803/200", "lastInteraction": 1769943748023 }
 ];
 
 const App: React.FC = () => {
@@ -68,20 +60,44 @@ const App: React.FC = () => {
   const [newChatId, setNewChatId] = useState('');
   const [isAddingGroup, setIsAddingGroup] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [totalMembers, setTotalMembers] = useState(0);
   const [joinEvents, setJoinEvents] = useState<JoinEvent[]>(() => {
     const saved = localStorage.getItem('tg_join_events');
-    return saved ? JSON.parse(saved) : SEED_HISTORY;
+    return saved ? JSON.parse(saved) : [];
   });
   const [lastUpdateId, setLastUpdateId] = useState(() => Number(localStorage.getItem('tg_last_update_id')) || 0);
   
   const importFileRef = useRef<HTMLInputElement>(null);
+  // Fix: Replaced NodeJS.Timeout with any for browser compatibility
+  const pollingRef = useRef<any | null>(null);
 
-  useEffect(() => { if (token) handleVerify(token); }, []);
-  
-  // Recalculate global total count whenever groups array or memberCounts change
-  useEffect(() => setTotalMembers(groups.reduce((sum, g) => sum + (g.memberCount || 0), 0)), [groups]);
+  // Initial startup sync
+  useEffect(() => { 
+    if (token) {
+      handleVerify(token).then(() => {
+        syncAllGroupsMemberCount(token);
+      });
+    } 
+  }, []);
+
+  // Set up polling for real-time updates
+  useEffect(() => {
+    if (token && botInfo) {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+      pollingRef.current = setInterval(() => {
+        discoverGroupsAndJoins(token);
+      }, 10000); // Poll every 10 seconds
+    }
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [token, botInfo, lastUpdateId]);
+
+  // DERIVED: Calculate global total count whenever groups array changes
+  useEffect(() => {
+    const newTotal = groups.reduce((sum, g) => sum + (g.memberCount || 0), 0);
+    setTotalMembers(newTotal);
+  }, [groups]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -97,12 +113,27 @@ const App: React.FC = () => {
     localStorage.setItem('tg_groups', JSON.stringify(groups));
   }, [isLocked, joinEvents, lastUpdateId, groups]);
 
+  const syncAllGroupsMemberCount = async (currentToken: string) => {
+    try {
+      const updatedGroups = await Promise.all(groups.map(async (g) => {
+        try {
+          const count = await getChatMemberCount(currentToken, g.id);
+          return { ...g, memberCount: count };
+        } catch (e) {
+          return g; // Keep old count if fetch fails
+        }
+      }));
+      setGroups(updatedGroups);
+    } catch (e) {
+      console.error("Global sync failed", e);
+    }
+  };
+
   const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
 
   const handleVerify = async (testToken: string) => {
     if (!testToken) return;
     setIsVerifying(true);
-    setError(null);
     try {
       const info = await verifyBotToken(testToken);
       setBotInfo(info);
@@ -110,7 +141,6 @@ const App: React.FC = () => {
       localStorage.setItem('tg_bot_token', testToken);
       discoverGroupsAndJoins(testToken);
     } catch (err: any) {
-      setError(err.message);
       setBotInfo(null);
     } finally { setIsVerifying(false); }
   };
@@ -118,7 +148,6 @@ const App: React.FC = () => {
   const handleAddGroupManual = async () => {
     if (!token || !newChatId) return;
     setIsAddingGroup(true);
-    setError(null);
     try {
       const chat = await getChatDetails(token, newChatId);
       const count = await getChatMemberCount(token, newChatId);
@@ -134,7 +163,7 @@ const App: React.FC = () => {
       setGroups(prev => [newGroup, ...prev.filter(g => g.id !== newGroup.id)]);
       setNewChatId('');
       alert("Batch successfully injected!");
-    } catch (err: any) { setError(err.message); } finally { setIsAddingGroup(false); }
+    } catch (err: any) { alert(err.message); } finally { setIsAddingGroup(false); }
   };
 
   const discoverGroupsAndJoins = async (currentToken: string) => {
@@ -145,22 +174,34 @@ const App: React.FC = () => {
       const newJoins: JoinEvent[] = [];
       let maxId = lastUpdateId;
       
-      // Track member joins per chat ID to update state accurately
-      const joinsPerChat: Record<string, number> = {};
+      const memberChanges: Record<string, number> = {};
 
       updates.forEach(u => {
         maxId = Math.max(maxId, u.update_id);
         const mu = u.chat_member;
-        if (mu && (mu.new_chat_member?.status === 'member' || mu.new_chat_member?.status === 'administrator')) {
+        
+        if (mu) {
           const chatIdStr = mu.chat.id.toString();
-          newJoins.push({
-            userId: mu.new_chat_member.user.id,
-            userName: mu.new_chat_member.user.first_name + (mu.new_chat_member.user.last_name ? ` ${mu.new_chat_member.user.last_name}` : ''),
-            chatId: mu.chat.id,
-            chatTitle: mu.chat.title,
-            timestamp: mu.date ? mu.date * 1000 : Date.now()
-          });
-          joinsPerChat[chatIdStr] = (joinsPerChat[chatIdStr] || 0) + 1;
+          const oldStatus = mu.old_chat_member?.status;
+          const newStatus = mu.new_chat_member?.status;
+
+          const isMemberNow = ['member', 'administrator', 'creator'].includes(newStatus);
+          const wasMemberBefore = ['member', 'administrator', 'creator'].includes(oldStatus);
+
+          if (isMemberNow && !wasMemberBefore) {
+            // User joined
+            newJoins.push({
+              userId: mu.new_chat_member.user.id,
+              userName: mu.new_chat_member.user.first_name + (mu.new_chat_member.user.last_name ? ` ${mu.new_chat_member.user.last_name}` : ''),
+              chatId: mu.chat.id,
+              chatTitle: mu.chat.title,
+              timestamp: mu.date ? mu.date * 1000 : Date.now()
+            });
+            memberChanges[chatIdStr] = (memberChanges[chatIdStr] || 0) + 1;
+          } else if (!isMemberNow && wasMemberBefore) {
+            // User left/kicked/banned
+            memberChanges[chatIdStr] = (memberChanges[chatIdStr] || 0) - 1;
+          }
         }
       });
 
@@ -169,17 +210,23 @@ const App: React.FC = () => {
           const combined = [...newJoins, ...prev];
           return combined.filter((v, i, a) => a.findIndex(t => t.userId === v.userId && t.timestamp === v.timestamp) === i).slice(0, 10000);
         });
+      }
 
-        // UPDATE MEMBER COUNT: Update each relevant group's memberCount
+      // SYNC: Apply all net changes to the groups state immediately
+      if (Object.keys(memberChanges).length > 0) {
         setGroups(prevGroups => prevGroups.map(g => {
-          if (joinsPerChat[g.id]) {
-            return { ...g, memberCount: (g.memberCount || 0) + joinsPerChat[g.id] };
+          if (memberChanges[g.id]) {
+            const updatedCount = Math.max(0, (g.memberCount || 0) + memberChanges[g.id]);
+            return { ...g, memberCount: updatedCount };
           }
           return g;
         }));
       }
+
       setLastUpdateId(maxId);
-    } catch (e) {} finally { setIsScanning(false); }
+    } catch (e) {
+      console.error("Polling error", e);
+    } finally { setIsScanning(false); }
   };
 
   const handleExecuteKick = async (chatId: number, userId: number, eventId: string) => {
@@ -188,15 +235,13 @@ const App: React.FC = () => {
       await kickChatMember(token, chatId, userId);
       setJoinEvents(prev => prev.filter(e => `${e.userId}-${e.timestamp}` !== eventId));
       
-      // DECREMENT MEMBER COUNT: Someone was removed from the matrix
+      // Immediately decrement count in state
       setGroups(prevGroups => prevGroups.map(g => {
         if (g.id === chatId.toString()) {
           return { ...g, memberCount: Math.max(0, (g.memberCount || 0) - 1) };
         }
         return g;
       }));
-
-      alert("Member removed successfully.");
     } catch (err: any) { alert(`Operation failed: ${err.message}`); }
   };
 
@@ -219,7 +264,7 @@ const App: React.FC = () => {
           setToken(data.token);
           handleVerify(data.token);
         }
-        alert('Data imported successfully!');
+        alert('Data imported!');
       } catch (err) { alert('Import failed.'); }
     };
     reader.readAsText(file);
@@ -268,7 +313,7 @@ const App: React.FC = () => {
               <button onClick={toggleTheme} className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm active:scale-90 transition-all">
                 {theme === 'dark' ? <Icons.Sun size={18} className="text-amber-500" /> : <Icons.Moon size={18} className="text-blue-600" />}
               </button>
-              <button onClick={() => discoverGroupsAndJoins(token)} disabled={isScanning} className="p-2.5 bg-blue-600 text-white rounded-xl shadow-lg active:scale-90 transition-all">
+              <button onClick={() => syncAllGroupsMemberCount(token)} disabled={isScanning} className="p-2.5 bg-blue-600 text-white rounded-xl shadow-lg active:scale-90 transition-all">
                 <Icons.Refresh size={18} className={isScanning ? 'animate-spin' : ''} />
               </button>
             </div>
@@ -321,7 +366,6 @@ const App: React.FC = () => {
                 <Icons.Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input type="text" placeholder="Search active batches..." className="w-full bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 pl-10 pr-4 py-3 rounded-2xl text-xs outline-none focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
               </div>
-              {/* Group cards: One per row */}
               <div className="grid grid-cols-1 gap-4">
                 {filteredGroups.map(g => (
                   <GroupCard key={g.id} group={g} onClick={() => setSelectedGroup(g)} />
@@ -340,7 +384,7 @@ const App: React.FC = () => {
                  </div>
                  <div className="flex-1 bg-rose-500 p-6 rounded-[2.5rem] border-b-4 border-rose-800 shadow-xl text-white relative overflow-hidden active:scale-95 transition-transform">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-1 opacity-80">Live Audit</p>
-                    <p className="text-4xl font-black">ACTIVE</p>
+                    <p className="text-4xl font-black">{isScanning ? 'SYNCING...' : 'ACTIVE'}</p>
                     <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-white/5 rounded-full" />
                  </div>
                  <div className="bg-slate-900 p-6 rounded-[2.5rem] border-b-4 border-black shadow-xl flex flex-col justify-center min-w-[220px]">
@@ -375,11 +419,6 @@ const App: React.FC = () => {
                             </td>
                           </tr>
                         ))}
-                        {filteredJoins.length === 0 && (
-                          <tr>
-                            <td colSpan={4} className="px-6 py-20 text-center opacity-30 italic font-black uppercase text-xs tracking-widest">No matrix activity found for this window</td>
-                          </tr>
-                        )}
                       </tbody>
                    </table>
                  </div>
@@ -399,7 +438,6 @@ const App: React.FC = () => {
                     <button onClick={() => setIsLocked(!isLocked)} className="px-6 py-4 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">{isLocked ? 'Unlock' : 'Lock'}</button>
                   </div>
 
-                  {/* Export / Import Section in Settings */}
                   <div className="grid grid-cols-2 gap-3 border-t border-slate-200 dark:border-slate-800 pt-6">
                     <button onClick={handleExport} className="flex flex-col items-center justify-center gap-2 p-5 bg-blue-600 text-white rounded-2xl shadow-lg active:scale-95 transition-all">
                       <Icons.DownloadCloud size={20} />
