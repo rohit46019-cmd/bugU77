@@ -3,12 +3,12 @@ import { Icons } from '../constants.tsx';
 
 interface SidebarProps {
   activeTab: string;
-  onTabChange: (tab: string) => void;
+  setActiveTab: (tab: string) => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, theme, toggleTheme }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Overview', icon: Icons.Home, color: 'shadow-blue-600/40' },
     { id: 'groups', label: 'Hubs', icon: Icons.Users, color: 'shadow-indigo-600/40' },
@@ -18,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, theme, toggle
 
   return (
     <>
-      <aside className="hidden md:flex w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col h-screen fixed top-0 left-0 z-20 transition-all duration-500">
+      <aside className="hidden md:flex w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen fixed top-0 left-0 z-20 transition-all duration-500">
         <div className="p-8 pb-4 flex items-center gap-3">
           <div className="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center shadow-[0_10px_30px_rgba(37,99,235,0.4)]">
             <Icons.Zap className="text-white" size={24} strokeWidth={2.5} />
@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, theme, toggle
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => onTabChange(item.id)}
+              onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-4 px-5 py-4 rounded-[1.25rem] transition-all duration-500 group relative ${
                 activeTab === item.id
                   ? `bg-blue-600 text-white shadow-2xl ${item.color} scale-[1.02]`
@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, theme, toggle
         {menuItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => onTabChange(item.id)}
+            onClick={() => setActiveTab(item.id)}
             className={`flex flex-col items-center gap-1 p-4 rounded-2xl transition-all active:scale-90 ${
               activeTab === item.id ? `bg-blue-600 text-white shadow-2xl ${item.color}` : 'text-slate-400'
             }`}
