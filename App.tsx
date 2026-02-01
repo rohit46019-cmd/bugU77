@@ -301,7 +301,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row font-sans transition-all duration-300">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} theme={theme} toggleTheme={toggleTheme} />
 
-      <main className="flex-1 md:ml-64 p-4 md:p-6 lg:p-8 pt-4 w-full max-w-[1400px] mx-auto overflow-hidden">
+      <main className="flex-1 md:ml-64 p-4 pb-28 md:p-6 lg:p-8 pt-4 w-full max-w-[1400px] mx-auto overflow-hidden">
         <header className="flex flex-col gap-2 mb-4 animate-in slide-in-from-top duration-500">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
