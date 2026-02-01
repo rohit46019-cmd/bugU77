@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Sidebar from './components/Sidebar.tsx';
 import GroupCard from './components/GroupCard.tsx';
 import InviteModal from './components/InviteModal.tsx';
+import ConfirmationModal from './components/ConfirmationModal.tsx';
 import { Icons } from './constants.tsx';
 import { TelegramGroup, JoinEvent } from './types.ts';
 import { verifyBotToken, getChatDetails, TelegramBotInfo, getChatMemberCount, getRecentUpdates, kickChatMember } from './services/telegramService.ts';
@@ -54,11 +55,6 @@ const App: React.FC = () => {
   const [token, setToken] = useState(localStorage.getItem('tg_bot_token') || DEFAULT_TOKEN);
   const [botInfo, setBotInfo] = useState<TelegramBotInfo | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
-  // FIX: The original initialization logic always resulted in `true`, causing TypeScript
-  // to infer the type of `isLocked` as the literal `true` instead of `boolean`. This
-  // led to a type error when trying to set it to `false`. The logic is corrected to
-  // properly read from localStorage and default to a locked state, ensuring `isLocked`
-  // is correctly typed as `boolean`.
   const [isLocked, setIsLocked] = useState(() => localStorage.getItem('tg_token_locked') !== 'false');
   const [groups, setGroups] = useState<TelegramGroup[]>(() => {
     const saved = localStorage.getItem('tg_groups');
@@ -77,6 +73,17 @@ const App: React.FC = () => {
   const [animationDirection, setAnimationDirection] = useState<'left' | 'right'>('right');
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
+  const [confirmationModalConfig, setConfirmationModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
   
   const importFileRef = useRef<HTMLInputElement>(null);
   const pollingRef = useRef<any | null>(null);
@@ -298,7 +305,17 @@ const App: React.FC = () => {
     } finally { setIsScanning(false); }
   };
 
+  const handleRequestKick = (joinEvent: JoinEvent) => {
+    setConfirmationModalConfig({
+      isOpen: true,
+      title: `Confirm Removal`,
+      message: `Are you sure you want to remove ${joinEvent.userName} from ${joinEvent.chatTitle}? This action cannot be undone.`,
+      onConfirm: () => handleExecuteKick(joinEvent.chatId, joinEvent.userId, `${joinEvent.userId}-${joinEvent.timestamp}`),
+    });
+  };
+
   const handleExecuteKick = async (chatId: number, userId: number, eventId: string) => {
+    setConfirmationModalConfig(prev => ({ ...prev, isOpen: false }));
     if (!token) return;
     try {
       await kickChatMember(token, chatId, userId);
@@ -493,7 +510,7 @@ const App: React.FC = () => {
                             <td className="px-6 py-4 text-[10px] font-bold text-slate-500">{e.chatTitle}</td>
                             <td className="px-6 py-4 text-[9px] font-mono text-slate-400">{formatTime12h(e.timestamp)}</td>
                             <td className="px-6 py-4 text-right">
-                              <button onClick={() => handleExecuteKick(e.chatId, e.userId, `${e.userId}-${e.timestamp}`)} className="p-2 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all"><Icons.Trash size={16}/></button>
+                              <button onClick={() => handleRequestKick(e)} className="p-2 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all"><Icons.Trash size={16}/></button>
                             </td>
                           </tr>
                         ))}
@@ -535,6 +552,15 @@ const App: React.FC = () => {
 
       {selectedGroup && (
         <InviteModal group={selectedGroup} onClose={() => setSelectedGroup(null)} botToken={token} onInteraction={() => handleGroupInteraction(selectedGroup.id)} />
+      )}
+
+      {confirmationModalConfig.isOpen && (
+        <ConfirmationModal
+          title={confirmationModalConfig.title}
+          message={confirmationModalConfig.message}
+          onConfirm={confirmationModalConfig.onConfirm}
+          onClose={() => setConfirmationModalConfig(prev => ({ ...prev, isOpen: false }))}
+        />
       )}
     </div>
   );
