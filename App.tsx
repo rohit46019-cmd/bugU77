@@ -8,7 +8,7 @@ import { verifyBotToken, getChatDetails, TelegramBotInfo, getChatMemberCount, ge
 
 const DEFAULT_TOKEN = '8357993008:AAGCcWUfCrRboCCnUS3N3kHS53PvAPIMwxs';
 const DEFAULT_GROUPS: TelegramGroup[] = [
-  { "id": "-1003736636212", "name": "PREMIUM HUB 8.0", "memberCount": 0, "description": "Auto Synced Hub", "category": "Telegram", "image": "https://picsum.photos/seed/-1003736636212/200", "lastInteraction": Date.now() },
+  { "id": "-1003736636212", "name": "Ultra Calculation", "memberCount": 6, "description": "Auto Synced Hub", "category": "Telegram", "image": "https://picsum.photos/seed/-1003736636212/200", "lastInteraction": Date.now() },
   { "id": "-1003732445402", "name": "RANI MAM 7.0", "memberCount": 3, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003732445402/200", "lastInteraction": 1769838117170 },
   { "id": "-1003360985096", "name": "Hindi Foundation Batch 2025 by khan sir", "memberCount": 3, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003360985096/200", "lastInteraction": 1769943253862 },
   { "id": "-1003067240220", "name": "𝗔𝗗𝗜𝗧𝗬𝗔 𝗦𝗜𝗥 3.0", "memberCount": 8, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003067240220/200", "lastInteraction": 1769773345247 },
