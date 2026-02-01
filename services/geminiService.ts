@@ -6,7 +6,10 @@ import { TelegramGroup, GeminiInsight } from "../types.ts";
  * Helper to get the AI instance.
  * Guidelines require creating a new instance before API calls for up-to-date keys.
  */
-const getAi = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY
+});
+
 
 export async function getGroupInsights(group: TelegramGroup): Promise<GeminiInsight> {
   const prompt = `Analyze this Telegram group and provide administrative insights:
