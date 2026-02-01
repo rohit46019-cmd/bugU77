@@ -37,13 +37,13 @@ const SEED_HISTORY: JoinEvent[] = [
 ];
 
 const ROW_COLORS = [
-  'bg-blue-600/20 border-blue-600/40 text-blue-800 dark:text-blue-300',
-  'bg-emerald-600/20 border-emerald-600/40 text-emerald-800 dark:text-emerald-300',
-  'bg-rose-600/20 border-rose-600/40 text-rose-800 dark:text-rose-300',
-  'bg-amber-600/20 border-amber-600/40 text-amber-800 dark:text-amber-300',
-  'bg-indigo-600/20 border-indigo-600/40 text-indigo-800 dark:text-indigo-300',
-  'bg-purple-600/20 border-purple-600/40 text-purple-800 dark:text-purple-300',
-  'bg-cyan-600/20 border-cyan-600/40 text-cyan-800 dark:text-cyan-300',
+  'bg-blue-700/20 border-blue-600/40 text-blue-800 dark:text-blue-300',
+  'bg-emerald-700/20 border-emerald-600/40 text-emerald-800 dark:text-emerald-300',
+  'bg-rose-700/20 border-rose-600/40 text-rose-800 dark:text-rose-300',
+  'bg-amber-700/20 border-amber-600/40 text-amber-800 dark:text-amber-300',
+  'bg-indigo-700/20 border-indigo-600/40 text-indigo-800 dark:text-indigo-300',
+  'bg-purple-700/20 border-purple-600/40 text-purple-800 dark:text-purple-300',
+  'bg-cyan-700/20 border-cyan-600/40 text-cyan-800 dark:text-cyan-300',
 ];
 
 const App: React.FC = () => {
