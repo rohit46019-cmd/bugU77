@@ -8,16 +8,16 @@ import { verifyBotToken, getChatDetails, TelegramBotInfo, getChatMemberCount, ge
 
 // Add missing constant ROW_COLORS
 const ROW_COLORS = [
-  'bg-blue-500/10 border-blue-500/20 text-blue-600',
-  'bg-emerald-500/10 border-emerald-500/20 text-emerald-600',
-  'bg-rose-500/10 border-rose-500/20 text-rose-600',
-  'bg-amber-500/10 border-amber-500/20 text-amber-600',
-  'bg-purple-500/10 border-purple-500/20 text-purple-600',
+  'bg-blue-800/10 border-blue-500/20 text-blue-600',
+  'bg-emerald-800/10 border-emerald-500/20 text-emerald-600',
+  'bg-rose-800/10 border-rose-500/20 text-rose-600',
+  'bg-amber-800/10 border-amber-500/20 text-amber-600',
+  'bg-purple-800/10 border-purple-500/20 text-purple-600',
 ];
 
 const DEFAULT_TOKEN = '8357993008:AAGCcWUfCrRboCCnUS3N3kHS53PvAPIMwxs';
 const DEFAULT_GROUPS: TelegramGroup[] = [
-  { "id": "-1003736636212", "name": "PREMIUM HUB 8.0", "memberCount": 0, "description": "Auto Synced Hub", "category": "Telegram", "image": "https://picsum.photos/seed/-1003736636212/200", "lastInteraction": Date.now() },
+  { "id": "-1003736636212", "name": "Ultra Calculation by Abhinaya sir", "memberCount": 0, "description": "Auto Synced Hub", "category": "Telegram", "image": "https://picsum.photos/seed/-1003736636212/200", "lastInteraction": Date.now() },
   { "id": "-1003732445402", "name": "RANI MAM 7.0", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003732445402/200", "lastInteraction": 1769838117170 },
   { "id": "-1003360985096", "name": "Hindi Foundation Batch 2025 by khan sir", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003360985096/200", "lastInteraction": 1769943253862 },
   { "id": "-1003067240220", "name": "𝗔𝗗𝗜𝗧𝗬𝗔 𝗦𝗜𝗥 3.0", "memberCount": 0, "description": "Synced Group", "category": "Telegram", "image": "https://picsum.photos/seed/-1003067240220/200", "lastInteraction": 1769773345247 },
