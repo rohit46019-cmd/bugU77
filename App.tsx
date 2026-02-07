@@ -8,11 +8,11 @@ import { verifyBotToken, getChatDetails, TelegramBotInfo, getChatMemberCount, ge
 
 // Add missing constant ROW_COLORS
 const ROW_COLORS = [
-  'bg-blue-800/10 border-blue-500/20 text-blue-600',
-  'bg-emerald-800/10 border-emerald-500/20 text-emerald-600',
-  'bg-rose-800/10 border-rose-500/20 text-rose-600',
-  'bg-amber-800/10 border-amber-500/20 text-amber-600',
-  'bg-purple-800/10 border-purple-500/20 text-purple-600',
+  'bg-blue-800/10 border-blue-800/20 text-blue-600',
+  'bg-emerald-800/10 border-emerald-800/20 text-emerald-600',
+  'bg-rose-800/10 border-rose-800/20 text-rose-600',
+  'bg-amber-800/10 border-amber-800/20 text-amber-600',
+  'bg-purple-800/10 border-purple-800/20 text-purple-600',
 ];
 
 const DEFAULT_TOKEN = '8357993008:AAGCcWUfCrRboCCnUS3N3kHS53PvAPIMwxs';
