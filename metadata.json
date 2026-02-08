@@ -9,19 +9,19 @@
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "https://picsum.photos/seed/telebridge/192/192",
+      "src": "https://photos.app.goo.gl/ByE2ExWuzEvKsGkt6",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://picsum.photos/seed/telebridge/512/512",
+      "src": "https://photos.app.goo.gl/ByE2ExWuzEvKsGkt6",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://pin.it/381zgaECA",
+      "src": "https://photos.app.goo.gl/ByE2ExWuzEvKsGkt6",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
