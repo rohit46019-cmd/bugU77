@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
 import { Icons } from '../constants.tsx';
 
 interface SidebarProps {
@@ -16,7 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, theme, toggle
     { id: 'settings', label: 'Nodes', icon: Icons.Settings, color: 'purple' },
   ];
 
-  // Helper to get active item's color classes
+  // Helper to get active item's color class
   const getActiveColor = (itemColor: string) => {
     const colors: Record<string, string> = {
       blue: 'bg-blue-600 text-white shadow-blue-600/20',
@@ -25,64 +25,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, theme, toggle
       purple: 'bg-purple-600 text-white shadow-purple-600/20',
     };
     return colors[itemColor] || 'bg-blue-600 text-white';
-  };
-
-  // --- Mobile swipe & sliding indicator logic ---
-  const navRef = useRef<HTMLDivElement>(null);
-  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
-
-  // Update indicator position when activeTab changes or window resizes
-  useEffect(() => {
-    const activeIndex = menuItems.findIndex(item => item.id === activeTab);
-    const activeButton = buttonRefs.current[activeIndex];
-    if (activeButton && navRef.current) {
-      const containerRect = navRef.current.getBoundingClientRect();
-      const buttonRect = activeButton.getBoundingClientRect();
-      // Indicator width = 20px (icon size), center under icon
-      const indicatorWidth = 20;
-      const left = buttonRect.left - containerRect.left + (buttonRect.width - indicatorWidth) / 2;
-      setIndicatorStyle({ left, width: indicatorWidth, opacity: 1 });
-    } else {
-      setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
-    }
-  }, [activeTab, menuItems]);
-
-  // Recalculate on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      const activeIndex = menuItems.findIndex(item => item.id === activeTab);
-      const activeButton = buttonRefs.current[activeIndex];
-      if (activeButton && navRef.current) {
-        const containerRect = navRef.current.getBoundingClientRect();
-        const buttonRect = activeButton.getBoundingClientRect();
-        const indicatorWidth = 20;
-        const left = buttonRect.left - containerRect.left + (buttonRect.width - indicatorWidth) / 2;
-        setIndicatorStyle({ left, width: indicatorWidth, opacity: 1 });
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [activeTab, menuItems]);
-
-  // --- Swipe handling ---
-  const touchStartX = useRef<number | null>(null);
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX.current - touchEndX;
-    const threshold = 50; // minimum swipe distance
-    if (Math.abs(diff) > threshold) {
-      const currentIndex = menuItems.findIndex(item => item.id === activeTab);
-      let newIndex = diff > 0 ? currentIndex + 1 : currentIndex - 1; // left swipe = next, right swipe = previous
-      if (newIndex >= 0 && newIndex < menuItems.length) {
-        onTabChange(menuItems[newIndex].id);
-      }
-    }
-    touchStartX.current = null;
   };
 
   return (
@@ -155,30 +97,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, theme, toggle
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation with Swipe & Sliding Indicator */}
-      <nav
-        ref={navRef}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        className="md:hidden fixed bottom-4 left-4 right-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 flex items-center justify-around p-1 z-50 rounded-2xl shadow-2xl relative"
-      >
-        {/* Sliding Indicator */}
-        <div
-          className="absolute bottom-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full transition-all duration-300 ease-out"
-          style={{
-            left: indicatorStyle.left,
-            width: indicatorStyle.width,
-            opacity: indicatorStyle.opacity,
-          }}
-        />
-
-        {menuItems.map((item, index) => {
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 flex items-center justify-around p-1 z-50 rounded-2xl shadow-2xl">
+        {menuItems.map((item) => {
           const isActive = activeTab === item.id;
           const activeColor = getActiveColor(item.color);
           return (
             <button
               key={item.id}
-              ref={el => (buttonRefs.current[index] = el)}
               onClick={() => onTabChange(item.id)}
               className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
                 isActive ? activeColor : 'text-slate-500 dark:text-slate-400'
