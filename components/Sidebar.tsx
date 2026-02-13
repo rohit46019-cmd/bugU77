@@ -1,6 +1,27 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Icons } from '../constants.tsx';
+import { Icons } from '../constants.tsx'; // your existing icons
+
+// Fallback theme icons in case Icons.Moon / Icons.Sun are missing
+const MoonIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
+const SunIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="5" />
+    <line x1="12" y1="1" x2="12" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="23" />
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <line x1="1" y1="12" x2="3" y2="12" />
+    <line x1="21" y1="12" x2="23" y2="12" />
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </svg>
+);
 
 interface SidebarProps {
   activeTab: string;
@@ -50,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           border-r border-slate-200/40 dark:border-slate-800/40
           bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl"
       >
-        {/* Logo with subtle hover animation */}
+        {/* Logo */}
         <motion.div 
           className="p-8 pb-4 flex items-center gap-3"
           whileHover={{ scale: 1.02 }}
@@ -67,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </motion.span>
         </motion.div>
 
-        {/* Navigation with staggered children */}
+        {/* Navigation */}
         <nav className="flex-1 mt-6 px-4 space-y-2">
           {menuItems.map((item, i) => (
             <motion.button
@@ -88,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
-              {/* Active Indicator with spring animation */}
+              {/* Active Indicator */}
               <motion.span
                 layoutId="activeIndicator"
                 className={`absolute left-0 top-2 bottom-2 w-1 rounded-full bg-white`}
@@ -109,9 +130,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </nav>
 
-        {/* Bottom section with status card and theme toggle */}
+        {/* Bottom section */}
         <div className="p-6 space-y-4">
-          {/* Status Card with pulse animation */}
+          {/* Status Card */}
           <motion.div
             className="p-5 bg-gradient-to-br from-blue-600/10 to-transparent border border-blue-600/20 rounded-3xl shadow-xl"
             whileHover={{ scale: 1.02 }}
@@ -138,7 +159,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </p>
           </motion.div>
 
-          {/* Theme Toggle Button (uses toggleTheme prop) */}
+          {/* Theme Toggle Button – uses fallback icons if Icons.Moon/Sun missing */}
           <motion.button
             onClick={toggleTheme}
             className="w-full flex items-center justify-center gap-2 p-3 rounded-2xl
@@ -147,7 +168,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {theme === 'light' ? <Icons.Moon size={18} /> : <Icons.Sun size={18} />}
+            {theme === 'light' ? (
+              Icons.Moon ? <Icons.Moon size={18} /> : <MoonIcon />
+            ) : (
+              Icons.Sun ? <Icons.Sun size={18} /> : <SunIcon />
+            )}
             <span className="text-xs font-bold uppercase tracking-wider">
               {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
             </span>
@@ -155,7 +180,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </motion.aside>
 
-      {/* Mobile Bottom Navigation with tap animations */}
+      {/* Mobile Bottom Navigation */}
       <motion.nav
         className="md:hidden fixed bottom-6 left-6 right-6 
           bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl 
