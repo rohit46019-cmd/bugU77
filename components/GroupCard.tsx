@@ -10,8 +10,8 @@ interface GroupCardProps {
 
 const UNIQUE_THEMES = [
   { 
-    gradient: 'from-blue-600/30 to-indigo-700/30', 
-    accent: 'bg-blue-1200', 
+    gradient: 'from-blue-1200/60 to-indigo-700/30', 
+    accent: 'bg-blue-600', 
     border: 'border-blue-500/30 shadow-blue-500/10',
     pattern: 'radial-gradient(circle at 1.5px 1.5px, rgba(59,130,246,0.1) 1px, transparent 0)' 
   },
